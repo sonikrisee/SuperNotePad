@@ -1,7 +1,12 @@
+import tkinter.filedialog as tfd
 import tkinter as tk
+import tkinter.messagebox as tkm
 
 window = tk.Tk()
 window.title("SuperNotePad+++")
+
+file_name = ""
+
 window.geometry("400x400")
 
 content_text = tk.Text(window)
@@ -15,23 +20,51 @@ main_menu.add_cascade(label="Файл", menu=file_menu)
 file_menu.add_command(label="Новый")
 file_menu.add_command(label="Открыть")
 file_menu.add_command(label="Сохранить")
+file_menu.add_command(label="Сохранить как", compound="left")
 file_menu.add_command(label="Закрыть")
 
 file_menu = tk.Menu(main_menu, tearoff=0)
 
 
+file_label = tk.Label(window, text = "Файл: "+file_name)
+file_label.place(relx=0, rely=1, anchor="sw")
+
+
 def open_file():
-    content_text.delete(1.0, "end")
-    with open("test.txt") as file:
+   content_text.delete(1.0, "end")
+   global file_name
+   file_name = tfd.askopenfilename()
+   file_label["text"] = "Файл: " + file_name
+   with open("file_name") as file:
         content_text.insert(1.0, file.read())
-    file_menu.add_command(label="Открыть", image=open_file_icon, compound="left", command=open_file)
 
 
 
+def save_as_file():
+    global file_name
+    file_name = tk.filedialog.asksaveasfilename()
+    file_label["text"] = "Файл: " + file_name
+    content = content_text.get(1.0, "end")
+    write_to_file(file_name)
+
+
+def save_file():
+    global file_name
+    if file_name == "":
+        save_as_file()
+    else:
+        content = content_text.get(1.0, "end")
+        with open(file_name, "w") as file:
+            file.write(content)
 
 
 
-
+def new_file():
+    global file_name
+    if tkm.askokcancel("Создание нового файла", "Вы уверены? Несохраненный текст будет удален"):
+        file_name = ""
+        file_label["text"] = "Файл: " + file_name
+    content_text.delete(1.0, "end")
 
 
 
